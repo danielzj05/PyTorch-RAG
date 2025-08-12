@@ -16,8 +16,6 @@ def get_pytorch_doc_urls():
     base_url = "https://docs.pytorch.org/docs/stable/"
     navigation_pages = [
         "nn.html",  # Neural network modules
-        "torch.html",  # Core tensor operations  
-        "optim.html"  # Optimizers
     ]
     
     doc_urls = []
