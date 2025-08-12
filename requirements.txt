@@ -1,0 +1,9 @@
+requests
+beautifulsoup4
+tqdm
+langchain
+langchain-huggingface
+chromadb
+sentence-transformers
+transformers
+torch
