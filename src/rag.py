@@ -4,23 +4,27 @@ from langchain.chains import RetrievalQA
 from langchain_core.prompts import PromptTemplate
 from transformers import pipeline
 import torch
+from pathlib import Path
 
-# Load the existing vectorstore
+# create paths to the repo root
+repo_root = Path(__file__).resolve().parents[1]
+raw_dir = repo_root / "data" / "raw"
+emb_dir = repo_root / "data" / "embeddings"
+
+# load the existing vectorstore
 embeddings = HuggingFaceEmbeddings(
     model_name="sentence-transformers/all-MiniLM-L6-v2"
 )
 
 vectorstore = Chroma(
-    persist_directory="../data/embeddings",
+    persist_directory=str(emb_dir),
     embedding_function=embeddings
 )
-
-print(torch.cuda.is_available())
 
 llm_pipeline = pipeline(
     "text-generation",
     model="Salesforce/codegen-350M-multi",  # Better for code
-    device=0,  # Use GPU
+    device=-1,  # use cpu for stability
     max_new_tokens=256,
     do_sample=True,
     temperature=0.2,

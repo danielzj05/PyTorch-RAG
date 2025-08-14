@@ -1,12 +1,19 @@
-
 from langchain.document_loaders import DirectoryLoader, TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_huggingface import HuggingFaceEmbeddings, HuggingFacePipeline
+from langchain_chroma import Chroma
+from pathlib import Path
 
 # langchain implementation to embed
 
-# Load from your saved files
+# create paths to the repo root
+repo_root = Path(__file__).resolve().parents[1]
+raw_dir = repo_root / "data" / "raw"
+emb_dir = repo_root / "data" / "embeddings"
+
+# load from your saved files
 loader = DirectoryLoader(
-    "../data/raw/", 
+    str(raw_dir), 
     glob="*.txt",
     loader_cls=lambda path: TextLoader(path, encoding="utf-8")
 )
@@ -23,4 +30,14 @@ text_splitter = RecursiveCharacterTextSplitter(
 splits = text_splitter.split_documents(documents)
 
 print(f"Created {len(splits)} chunks from {len(documents)} documents")
-print("Embeddings created and saved to ../data/embeddings")
+
+# create vectorstore
+embeddings = HuggingFaceEmbeddings(
+    model_name="sentence-transformers/all-MiniLM-L6-v2"
+)
+
+vectorstore = Chroma(
+    persist_directory=str(emb_dir),
+    embedding_function=embeddings
+)
+print(f"Embeddings created and saved to: {emb_dir}")
